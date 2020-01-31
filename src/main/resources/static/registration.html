@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Registration Page</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous"/>
+    <link rel="stylesheet" href="/css/registration.css">
+</head>
+<body>
+    <div class="container">
+        <div class="row align-items-center justify-content-center">
+            <div class="col-12">
+                <form id="form">
+                    <h4>
+                        Registration
+                        <div id="error" class="float-right">
+                            <div id="error_message"></div>
+                            <span></span>
+                        </div>
+                    </h4>
+                    <div class="form-group">
+                        <input type="text" id="mobile_number" class="form-control" placeholder="Mobile number" maxlength="15" required autofocus/>
+                    </div>
+                    <div class="form-group">
+                        <input type="text" id="first_name" class="form-control" placeholder="First name" maxlength="50" required/>
+                    </div>
+                    <div class="form-group">
+                        <input type="text" id="last_name" class="form-control" placeholder="Last name" maxlength="50" required/>
+                    </div>
+                    <div class="form-group">
+                        <select id="birth_month" class="form-control" style="width: 140px">
+                            <option value="" disabled selected hidden>Month</option>
+                        </select>
+                        <select id="birth_date" class="form-control" style="width: 80px">
+                            <option value="" disabled selected hidden>Date</option>
+                        </select>
+                        <select id="birth_year" class="form-control" style="width: 100px">
+                            <option value="" disabled selected hidden>Year</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <div class="form-check form-check-inline">
+                            <input type="radio" id="genderMale" name="gender" class="form-check-input" value="M"/>
+                            <label class="form-check-label" for="genderMale">Male</label>
+                        </div>
+                        <div class="form-check form-check-inline">
+                            <input type="radio" id="genderFemale" name="gender" class="form-check-input" value="F"/>
+                            <label class="form-check-label" for="genderFemale">Female</label>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <input type="email" id="email_address" class="form-control" placeholder="Email address" maxlength="100" required/>
+                    </div>
+                    <div class="form-group">
+                        <button type="submit" class="btn btn-block register">Register</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <div id="footer" class="row align-items-center justify-content-center">
+            <div class="col-12">
+                <div class="form-group">
+                    <label>Footer</label>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="https://code.jquery.com/jquery-3.4.1.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/jquery-validation@1.19.1/dist/jquery.validate.min.js"/>
+    <script defer src="https://use.fontawesome.com/releases/v5.12.0/js/all.js" integrity="sha384-S+e0w/GqyDFzOU88KBBRbedIB4IMF55OzWmROqS6nlDcXlEaV8PcFi4DHZYfDk4Y" crossorigin="anonymous"></script>
+    <script type="text/javascript">
+        $(document).ready(()=>{
+            function enableForm(enable){
+                $('#form').each((i,el)=>{
+                    $(el).find(':input').each((j,inp)=>{
+                        $(inp).prop('disabled',!enable);
+                    });
+                });
+            }
+            function showError(message){
+                $('#error_message').html(message);
+                $('#error').stop(true,true).show().delay(3000).fadeOut(500);
+            }
+            var months = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+            months.forEach((v,i)=>{
+                var val=i+1;
+                if(val<10){
+                    val='0'+val;
+                }
+                $('#birth_month').append('<option value="'+val+'">'+v+'</option>');
+            });
+            [...Array(31).keys()].forEach((v,i) => {
+                var val=i+1;
+                if(val<10){
+                    val='0'+val;
+                }
+                $('#birth_date').append('<option value="'+val+'">'+val+'</option>');
+            });
+            var currYear = new Date().getFullYear();
+            [...Array(100).keys()].forEach((v,i) => {
+                var year=currYear-v;
+                $('#birth_year').append('<option value="'+year+'">'+year+'</option>');
+            });
+            $('#form').submit(function(e){
+                e.preventDefault();
+                var bDate=null;
+                if($('#birth_date').val()!=null && $('#birth_month').val()!=null && $('#birth_year').val()!=null){
+                    bDate=$('#birth_date').val()+'-'+$('#birth_month').val()+'-'+$('#birth_year').val();
+                }
+                var postData=JSON.stringify({
+                    mobileNumber:$('#mobile_number').val(),
+                    firstName:$('#first_name').val(),
+                    lastName:$('#last_name').val(),
+                    birthDate: bDate,
+                    gender:$('input[name="gender"]').val(),
+                    emailAddress:$('#email_address').val()
+                });
+                $.ajax({
+                    url:'http://localhost:8181/user/register',
+                    beforeSend:(xhr)=>{
+                        enableForm(false);
+                    },
+                    cache:false,
+                    contentType:'application/json; charset=utf-8',
+                    data:postData,
+                    dataType:'json',
+                    method:'POST',
+                    success:(response)=>{
+                        if(response.success){
+                            $('#footer').addClass('login');
+                            $('#footer').find('div.form-group').html('<a href="/login.html" class="btn btn-block btn-login">Login</a>');
+                        }else{
+                            showError(response.message);
+                            enableForm(true);
+                        }
+                    }
+                }).fail(function() {
+                    showError('Internal server error');
+                    enableForm(true);
+                });
+            });
+        });
+    </script>
+</body>
+</html>
